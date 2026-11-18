@@ -1,0 +1,104 @@
+[
+  {
+    "id": "Q1",
+    "tipo": "simples",
+    "pergunta": "Quem tem direito à Tarifa Social de Energia Elétrica?",
+    "ground_truth": "Têm direito as unidades consumidoras da Subclasse Residencial Baixa Renda em que os moradores pertençam a uma família inscrita no CadÚnico com renda familiar mensal per capita de até meio salário mínimo, ou em que algum morador receba o Benefício de Prestação Continuada (BPC). Fonte: Lei 12.212/2010, art. 2º, incisos I e II.",
+    "documentos_esperados": [
+      "LEI_12212_2010"
+    ],
+    "evidencias": [
+      "renda familiar mensal per capita menor ou igual a meio salário mínimo",
+      "benefício de prestação continuada"
+    ]
+  },
+  {
+    "id": "Q2",
+    "tipo": "simples",
+    "pergunta": "A Tarifa Social pode valer para mais de uma unidade consumidora da mesma família?",
+    "ground_truth": "Não. A Tarifa Social é aplicada somente a uma única unidade consumidora por família de baixa renda. Fonte: Lei 12.212/2010, art. 2º, §2º.",
+    "documentos_esperados": [
+      "LEI_12212_2010"
+    ],
+    "evidencias": [
+      "somente a uma única unidade consumidora"
+    ]
+  },
+  {
+    "id": "Q3",
+    "tipo": "simples",
+    "pergunta": "O que o beneficiário deve fazer quando mudar de residência?",
+    "ground_truth": "Deve informar o novo endereço à distribuidora de energia elétrica, sob pena de perder o benefício da Tarifa Social. Fonte: Lei 12.212/2010, art. 5º.",
+    "documentos_esperados": [
+      "LEI_12212_2010"
+    ],
+    "evidencias": [
+      "novo endereço"
+    ]
+  },
+  {
+    "id": "Q4",
+    "tipo": "simples",
+    "pergunta": "Uma família com renda de até 3 salários mínimos pode ter direito à Tarifa Social?",
+    "ground_truth": "Excepcionalmente sim, se a família estiver inscrita no CadÚnico e tiver entre seus membros alguém com doença ou patologia cujo tratamento exija o uso continuado de aparelhos que consomem energia elétrica. Fonte: Lei 12.212/2010, art. 2º, §1º.",
+    "documentos_esperados": [
+      "LEI_12212_2010"
+    ],
+    "evidencias": [
+      "até 3 (três) salários mínimos"
+    ]
+  },
+  {
+    "id": "Q5",
+    "tipo": "armadilha",
+    "pergunta": "Qual é o desconto para a parcela do consumo de até 30 kWh por mês na Tarifa Social?",
+    "ground_truth": "Pela regra vigente (Lei 15.235/2025), o desconto é de 100% para a parcela do consumo de até 80 kWh/mês, o que inclui os primeiros 30 kWh. O desconto de 65% para até 30 kWh era da redação original de 2010 e foi substituído.",
+    "documentos_esperados": [
+      "LEI_15235_2025",
+      "LEI_12212_2010"
+    ],
+    "evidencias": [
+      "inferior ou igual a 80 kWh/mês"
+    ]
+  },
+  {
+    "id": "Q6",
+    "tipo": "armadilha",
+    "pergunta": "Existe desconto de 10% para o consumo entre 101 e 220 kWh por mês?",
+    "ground_truth": "Não mais. A faixa de 10% (101 a 220 kWh) existia na redação original de 2010, mas os incisos III e IV do art. 1º foram revogados pela Lei 15.235/2025. Pela regra vigente, o desconto é de 100% até 80 kWh/mês e 0% acima de 80 kWh/mês.",
+    "documentos_esperados": [
+      "LEI_15235_2025",
+      "LEI_12212_2010"
+    ],
+    "evidencias": [
+      "(revogado)",
+      "superior a 80 kWh/mês"
+    ]
+  },
+  {
+    "id": "Q7",
+    "tipo": "armadilha",
+    "pergunta": "Até quantos kWh por mês as famílias indígenas e quilombolas têm desconto de 100%?",
+    "ground_truth": "Até 80 kWh por mês, conforme a nova redação do art. 2º, §4º, dada pela Lei 15.235/2025. A redação original de 2010 previa o limite de 50 kWh/mês, que não vale mais.",
+    "documentos_esperados": [
+      "LEI_15235_2025",
+      "LEI_12212_2010"
+    ],
+    "evidencias": [
+      "limite de consumo de 80 kWh/mês"
+    ]
+  },
+  {
+    "id": "Q8",
+    "tipo": "armadilha",
+    "pergunta": "Uma família elegível consome 100 kWh por mês e a tarifa é de R$ 1,00 por kWh. Quanto paga pela energia com a Tarifa Social vigente?",
+    "ground_truth": "Pela regra vigente, os primeiros 80 kWh têm 100% de desconto e os 20 kWh restantes não têm desconto. Paga R$ 20,00 pela energia (20 kWh x R$ 1,00), sem contar tributos e outros encargos da fatura. Pela regra original de 2010 seriam R$ 52,50, que não vale mais.",
+    "documentos_esperados": [
+      "LEI_15235_2025",
+      "LEI_12212_2010"
+    ],
+    "evidencias": [
+      "inferior ou igual a 80 kWh/mês"
+    ]
+  }
+]

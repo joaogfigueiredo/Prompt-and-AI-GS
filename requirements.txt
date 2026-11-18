@@ -1,0 +1,14 @@
+langchain
+langchain-core
+langchain-text-splitters
+langchain-google-genai
+langchain-chroma
+chromadb
+gradio
+ragas
+python-dotenv
+scikit-learn
+pandas
+nbformat
+nbconvert
+ipykernel
