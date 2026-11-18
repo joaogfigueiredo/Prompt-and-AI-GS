@@ -59,7 +59,8 @@ add(M(r"""## 0. Metadados
 | Integrantes | João Guilherme Figueiredo (RM 572697) · Ryan Luther Roque (RM 572993) |
 | Turma / modalidade | 1CCR · dupla |
 | Frente escolhida | **D. Serviço público essencial**: Tarifa Social de Energia Elétrica, com documentos simulados de um Balcão municipal fictício (Vila Serena) |
-| Divisão de tarefas | João: base documental, chunking, índice, RAG, agente, guardrails, avaliação RAGAS e notebook. Ryan: revisão dos documentos e do ground truth e apresentação no vídeo |
+| Equipe | Citizen Solutions Tech |
+| Divisão de tarefas | Divisão geral do grupo: João Guilherme, códigos e partes complementares; Ryan Luther, lógica e códigos complementares |
 | Declaração de IA | Usamos o Claude (Anthropic) como assistente de programação: rascunho do código, dos testes e dos dois documentos simulados, que o grupo revisou. As 8 perguntas e o **ground truth** foram feitos com IA, **com autorização do professor** (conversa privada), e revisados pelo grupo. O registro completo está em `6_Chat_Log.txt` |
 | Modelo usado | Google **Gemini** (API gratuita do Google AI Studio) para a geração, para os embeddings e como juiz do RAGAS. Os nomes exatos dos modelos aparecem na célula de preparação abaixo |
 """))

@@ -1,6 +1,6 @@
 # Citizen Assist AI: assistente com RAG, agente e guardrails (Prompt and AI, GS2026.2)
 
-**Integrantes:** João Guilherme Figueiredo (RM 572697) e Ryan Luther Roque (RM 572993) · **Turma:** 1CCR · **Modalidade:** dupla
+**Equipe:** Citizen Solutions Tech · **Integrantes:** João Guilherme Figueiredo (RM 572697) e Ryan Luther Roque (RM 572993) · **Turma:** 1CCR · **Modalidade:** dupla
 **Frente escolhida:** D, serviço público essencial (Tarifa Social de Energia Elétrica)
 
 ## O que é
