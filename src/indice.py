@@ -57,7 +57,7 @@ def construir_indices_gemini() -> dict:
     docs = carregar_documentos(config.PASTA_DOCUMENTOS)
     embeddings = config.criar_embeddings()
     indices = {}
-    for estrategia, colecao in (("fixo", "lei_fixo"), ("artigo", "lei_por_artigo")):
+    for estrategia, colecao in (("fixo", "docs_fixo"), ("artigo", "docs_por_artigo")):
         indices[estrategia] = criar_indice(gerar_chunks(docs, estrategia), embeddings, colecao, config.PASTA_CHROMA)
     return indices
 

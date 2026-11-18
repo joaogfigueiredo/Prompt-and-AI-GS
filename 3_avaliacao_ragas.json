@@ -1,0 +1,150 @@
+{
+  "gerado_em": "2026-11-18T06:25:07",
+  "modelo_llm": "models/gemini-3.5-flash-lite",
+  "modelo_embedding": "models/gemini-embedding-001",
+  "n_perguntas": 8,
+  "medias": {
+    "faithfulness": 0.601,
+    "answer_relevancy": 0.7714,
+    "context_precision": 0.7778,
+    "context_recall": 1.0
+  },
+  "medias_por_tipo": {
+    "simples": {
+      "faithfulness": 0.6333,
+      "answer_relevancy": 0.7714,
+      "context_precision": 0.8333,
+      "context_recall": 1.0
+    },
+    "armadilha": {
+      "faithfulness": 0.5848,
+      "answer_relevancy": null,
+      "context_precision": 0.75,
+      "context_recall": 1.0
+    }
+  },
+  "por_pergunta": [
+    {
+      "id": "Q1",
+      "tipo": "simples",
+      "pergunta": "Quem pode pedir a Tarifa Social no Balcão de Vila Serena?",
+      "resposta": "Podem pedir a Tarifa Social as famílias inscritas no Cadastro Único (CadÚnico) com renda por pessoa de até meio salário mínimo, e as famílias que tenham entre os moradores uma pessoa que receba o Benefício de Prestação Continuada (BPC) [CARTILHA_2025, Art. 2º]. \n\nEm caráter excepcional, famílias inscritas no CadÚnico com renda de até 3 salários mínimos também podem pedir, quando houver morador em tratamento de saúde que exija o uso contínuo de aparelhos elétricos [CARTILHA_2025, Art. 2º]. Os dados do CadÚnico precisam estar atualizados a cada 2 anos [PORTARIA_03_2026, Art. 6º].\n\nLembre-se de confirmar a informação no canal oficial ou na distribuidora de energia, pois o Balcão não concede o benefício diretamente [CARTILHA_2025, Art. 1º].",
+      "ferramentas_usadas": [
+        "buscar_base_documental",
+        "buscar_base_documental"
+      ],
+      "metricas": {
+        "faithfulness": null,
+        "answer_relevancy": 0.716,
+        "context_precision": null,
+        "context_recall": 1.0
+      }
+    },
+    {
+      "id": "Q2",
+      "tipo": "simples",
+      "pergunta": "A Tarifa Social vale para mais de uma casa da mesma família?",
+      "resposta": "Não, o desconto vale para uma única unidade consumidora por família. Quem tem mais de uma casa deve escolher em qual delas quer receber o benefício [CARTILHA_2025, Art. 7º].\n\nLembre de confirmar a informação no canal oficial.",
+      "ferramentas_usadas": [
+        "buscar_base_documental"
+      ],
+      "metricas": {
+        "faithfulness": 0.6667,
+        "answer_relevancy": 0.8079,
+        "context_precision": 0.8333,
+        "context_recall": 1.0
+      }
+    },
+    {
+      "id": "Q3",
+      "tipo": "simples",
+      "pergunta": "De quanto em quanto tempo a família precisa renovar o CadÚnico para continuar com a Tarifa Social?",
+      "resposta": "Os dados do CadÚnico devem ser renovados a cada **2 anos** no CRAS ou no setor de cadastro do município para evitar a perda do benefício [CARTILHA_2025, Art. 8º]. \n\n*Nota: Esta informação consta na regra anterior (Cartilha 2025), sendo importante confirmar se houve alteração nos prazos no seu canal oficial.*",
+      "ferramentas_usadas": [
+        "buscar_base_documental"
+      ],
+      "metricas": {
+        "faithfulness": 0.6,
+        "answer_relevancy": 0.7595,
+        "context_precision": null,
+        "context_recall": 1.0
+      }
+    },
+    {
+      "id": "Q4",
+      "tipo": "simples",
+      "pergunta": "Que documentos devo levar ao Balcão da Tarifa Social?",
+      "resposta": "Para ser atendido no Balcão, você deve levar [CARTILHA_2025, Art. 5º]:\n\n* Um documento oficial com foto;\n* O número do NIS ou o comprovante de inscrição no CadÚnico;\n* Uma conta de luz recente da casa.\n\n*Aviso importante:* Eu sou apenas um assistente introdutório e não um canal oficial. Lembre-se de confirmar essas informações nos canais oficiais de atendimento.",
+      "ferramentas_usadas": [
+        "buscar_base_documental"
+      ],
+      "metricas": {
+        "faithfulness": null,
+        "answer_relevancy": 0.8021,
+        "context_precision": null,
+        "context_recall": 1.0
+      }
+    },
+    {
+      "id": "Q5",
+      "tipo": "armadilha",
+      "pergunta": "Qual é o desconto para a parcela do consumo de até 30 kWh por mês na Tarifa Social?",
+      "resposta": "Pela regra atual (VIGENTE), o desconto escalonado antigo (que incluía o percentual para até 30 kWh) foi revogado [PORTARIA_03_2026, Art. 2º]. \n\nAtualmente, o desconto é de **100%** para a parcela do consumo mensal de **até 80 kWh**, tanto para as famílias em geral quanto para famílias indígenas e quilombolas [PORTARIA_03_2026, Art. 2º e Art. 3º]. \n\n*Nota anterior (Cartilha 2025):* Antes da mudança, o desconto para a parcela de até 30 kWh era de 65%, mas essa regra foi substituída [CARTILHA_2025, Art. 3º; PORTARIA_03_2026, Art. 2º].\n\n*Aviso:* Eu NÃO sou canal oficial. Por favor, confirme sempre as informações com a sua distribuidora de energia ou canal oficial.",
+      "ferramentas_usadas": [
+        "buscar_base_documental"
+      ],
+      "metricas": {
+        "faithfulness": 0.7143,
+        "answer_relevancy": null,
+        "context_precision": null,
+        "context_recall": 1.0
+      }
+    },
+    {
+      "id": "Q6",
+      "tipo": "armadilha",
+      "pergunta": "Existe desconto de 10% para o consumo entre 101 e 220 kWh por mês?",
+      "resposta": "Não. Essa regra de 10% para o consumo entre 101 e 220 kWh [CARTILHA_2025, Art. 3º] era da regra antiga (Cartilha 2025) e **mudou**.\n\nPela regra **VIGENTE** (Portaria 03/2026), a faixa de 101 a 220 kWh não possui mais desconto [PORTARIA_03_2026, Art. 2º]. O desconto atual é de 100% apenas sobre a parcela do consumo mensal de até 80 kWh, e a parcela que passar de 80 kWh não tem nenhum desconto [PORTARIA_03_2026, Art. 2º].\n\n*Lembre-se: eu sou apenas um assistente introdutório e não um canal oficial. Confirme sempre no canal oficial da sua distribuidora de energia.*",
+      "ferramentas_usadas": [
+        "buscar_base_documental"
+      ],
+      "metricas": {
+        "faithfulness": 0.7143,
+        "answer_relevancy": null,
+        "context_precision": null,
+        "context_recall": 1.0
+      }
+    },
+    {
+      "id": "Q7",
+      "tipo": "armadilha",
+      "pergunta": "Em que dias e horários o Balcão da Tarifa Social faz o registro de mudança de endereço?",
+      "resposta": "O registro de mudança de endereço é feito **às segundas e quartas-feiras, das 13h às 17h, na Sala 5** [PORTARIA_03_2026, Art. 5º]. \n\n*(Aviso: Essa regra mudou; antes era nas terças e quintas-feiras pela manhã, mas a norma antiga foi atualizada) [CARTILHA_2025, Art. 6º; PORTARIA_03_2026, Art. 5º].*\n\nLembre-se de confirmar essas informações no canal oficial. O Citizen Assist AI é um assistente introdutório e não é canal oficial.",
+      "ferramentas_usadas": [
+        "buscar_base_documental"
+      ],
+      "metricas": {
+        "faithfulness": 0.625,
+        "answer_relevancy": null,
+        "context_precision": 0.5,
+        "context_recall": 1.0
+      }
+    },
+    {
+      "id": "Q8",
+      "tipo": "armadilha",
+      "pergunta": "Uma família elegível consome 100 kWh por mês e a tarifa é de R$ 1,00 por kWh. Quanto paga pela energia com a Tarifa Social vigente?",
+      "resposta": "Com a regra vigente (Portaria 03/2026), a família tem desconto de 100% sobre os primeiros 80 kWh e paga integralmente os 20 kWh restantes. Considerando uma tarifa de R$ 1,00 por kWh, o valor a pagar pelo consumo é de R$ 20,00 [PORTARIA_03_2026, Art. 2º]. \n\n*(Nota: A regra antiga da Cartilha 2025 foi atualizada por esta portaria) [PORTARIA_03_2026, Art. 2º].*\n\nConfirme sempre essas informações no canal oficial. O Citizen Assist AI não é um canal oficial.",
+      "ferramentas_usadas": [
+        "buscar_base_documental",
+        "calcular_desconto_tarifa_social"
+      ],
+      "metricas": {
+        "faithfulness": 0.2857,
+        "answer_relevancy": null,
+        "context_precision": 1.0,
+        "context_recall": 1.0
+      }
+    }
+  ]
+}

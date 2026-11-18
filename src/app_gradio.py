@@ -9,9 +9,10 @@ from . import config
 from .agente import AgenteCidadao
 
 AVISO = ("**Citizen Assist AI** é um protótipo educacional e **não é canal oficial**. "
+         "Os documentos da base são simulados (cidade fictícia de Vila Serena). "
          "Não digite CPF, endereço ou outros dados pessoais. Confirme sempre na distribuidora ou na ANEEL.")
 EXEMPLOS = [
-    "Quem tem direito à Tarifa Social?",
+    "Quem pode pedir a Tarifa Social no Balcão de Vila Serena?",
     "Qual o desconto para quem consome até 30 kWh?",
     "Consumo 100 kWh e tarifa de R$ 0,90 por kWh: quanto pago com a Tarifa Social?",
 ]
@@ -22,7 +23,8 @@ def formatar_fontes(fontes: list[dict], chamadas: list[dict]) -> str:
         return "**Fontes:** nenhuma para esta resposta."
     linhas = ["**Fontes desta resposta**"]
     for f in fontes:
-        linhas.append(f"- `{f['doc_id']}`, {f['artigo']} ({f['status']}, {f['data']}): [{f['url']}]({f['url']})")
+        origem = f"[{f['url']}]({f['url']})" if str(f["url"]).startswith("http") else f["url"]
+        linhas.append(f"- `{f['doc_id']}`, {f['artigo']} ({f['status']}, {f['data']}): {origem}")
     if chamadas:
         linhas.append("\n**Ferramentas usadas:** " + ", ".join(c["ferramenta"] for c in chamadas))
     return "\n".join(linhas)

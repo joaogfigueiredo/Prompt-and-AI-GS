@@ -22,7 +22,8 @@ def _normalizar(texto: str) -> str:
 _PALAVRAS_ESCOPO = re.compile(
     r"tarifa|energia|eletric|\bluz\b|kwh|quilowatt|cadunico|cadastro unico|\bbpc\b|"
     r"prestacao continuada|baixa renda|distribuidora|aneel|indigena|quilombola|desconto|"
-    r"\bfatura|conta de|consumo|medidor|\bcde\b|subclasse|beneficio|salario minimo|lei 1[0-9]"
+    r"\bfatura|conta de|consumo|medidor|\bcde\b|subclasse|beneficio|salario minimo|lei 1[0-9]|"
+    r"balcao|cartilha|portaria|vila serena"
 )
 MENSAGEM_FORA_DO_ESCOPO = (
     "Só posso ajudar com a Tarifa Social de Energia Elétrica e temas ligados (direitos, "
@@ -73,6 +74,8 @@ _PEDIDO_DADOS_DE_TERCEIROS = re.compile(
     r"(descobr|descubr|consult|busc|ach|pesquis|me (de|passe|diga))\w* .{0,40}"
     r"(cpf|endereco|telefone|renda|nis|dados) (de|do|da) (meu |minha |um |uma |o |a )?"
     r"(pessoa|fulano|vizinho|vizinha|terceiro|cliente|alguem|funcionario)"
+    r"|quais (moradores|familias|pessoas|vizinhos) (do|da|de|no|na) (meu |minha |nosso |nossa )?"
+    r"(bairro|rua|predio|condominio|comunidade|vila|cidade|municipio)"
 )
 MENSAGEM_DADOS_DE_TERCEIROS = (
     "Não consulto nem forneço dados pessoais de terceiros. Posso explicar as regras da Tarifa Social."

@@ -1,0 +1,19 @@
+CERTIFICAÇÃO DE ENTREGA
+Global Solution 2026.2 · Prompt and Artificial Intelligence · FIAP
+
+Turma: 1CCR
+Modalidade: dupla
+
+Integrantes:
+  - João Guilherme Figueiredo · RM 572697
+  - Ryan Luther Roque · RM 572993
+
+Links (todos com acesso liberado para visualização):
+  - Notebook no Google Colab: [COLE AQUI O LINK DO COLAB]
+  - Repositório no GitHub: https://github.com/joaogfigueiredo/Prompt-and-AI-GS
+  - Vídeo de demonstração (YouTube, não listado, até 3 minutos): [COLE AQUI O LINK DO VÍDEO]
+
+Declarações:
+  - Nenhuma chave de API está escrita no notebook, no ZIP, no repositório ou nos prints.
+  - O modelo usado foi o Gemini, pela API gratuita do Google AI Studio (a chave fica nos Secrets do Colab).
+  - O uso de IA como ferramenta está registrado em 6_Chat_Log.txt.

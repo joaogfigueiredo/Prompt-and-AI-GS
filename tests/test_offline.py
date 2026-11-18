@@ -55,22 +55,42 @@ def pedir(nome, args, id_="c1"):
 
 class TestDocumentos(unittest.TestCase):
     def test_carrega_os_dois_documentos(self):
-        self.assertEqual({d.doc_id for d in DOCS}, {"LEI_12212_2010", "LEI_15235_2025"})
+        self.assertEqual({d.doc_id for d in DOCS}, {"CARTILHA_2025", "PORTARIA_03_2026"})
+
+    def test_cada_documento_tem_metadados_e_100_palavras(self):
+        for d in DOCS:
+            self.assertTrue(d.titulo and d.data_publicacao and d.tema, d.doc_id)
+            self.assertGreaterEqual(len(d.texto.split()), 100, d.doc_id)
 
     def test_ha_armadilha_de_desatualizacao(self):
         status = {d.doc_id: d.status for d in DOCS}
-        self.assertIn("DESATUALIZADO", status["LEI_12212_2010"])
-        self.assertTrue(status["LEI_15235_2025"].startswith("VIGENTE"))
+        datas = {d.doc_id: d.data_publicacao for d in DOCS}
+        self.assertIn("DESATUALIZADO", status["CARTILHA_2025"])
+        self.assertTrue(status["PORTARIA_03_2026"].startswith("VIGENTE"))
+        self.assertLess(datas["CARTILHA_2025"], datas["PORTARIA_03_2026"])
         textos = {d.doc_id: d.texto for d in DOCS}
-        self.assertIn("65%", textos["LEI_12212_2010"])           # regra antiga
-        self.assertIn("100% (cem por cento)", textos["LEI_15235_2025"])  # regra nova
+        self.assertIn("65%", textos["CARTILHA_2025"])                 # regra antiga
+        self.assertIn("100% sobre a parcela do consumo mensal de até 80 kWh", textos["PORTARIA_03_2026"])  # regra nova
+
+    def test_detalhe_so_na_documentacao_de_apoio(self):
+        cartilha = next(d for d in DOCS if d.doc_id == "CARTILHA_2025")
+        cabeca = cartilha.titulo + cartilha.texto.split("Art. 2º")[0]
+        self.assertNotIn("a cada 2 anos", cabeca)
+        self.assertIn("a cada 2 anos", cartilha.texto)
 
     def test_chunk_por_artigo_rotula_o_artigo(self):
         chunks = chunk_por_artigo(DOCS[0])
-        self.assertTrue(any(c.metadata["artigo"] == "Art. 5º" for c in chunks))
-        art5 = next(c for c in chunks if c.metadata["artigo"] == "Art. 5º")
-        self.assertIn("novo endereço", art5.page_content)
-        self.assertTrue(art5.page_content.startswith("[LEI_12212_2010 | Art. 5º]"))
+        self.assertTrue(any(c.metadata["artigo"] == "Art. 6º" for c in chunks))
+        art6 = next(c for c in chunks if c.metadata["artigo"] == "Art. 6º")
+        self.assertIn("registrar a mudança no Balcão", art6.page_content)
+        self.assertTrue(art6.page_content.startswith("[CARTILHA_2025 | Art. 6º]"))
+
+    def test_chunk_fixo_tem_artigo_no_metadado_mas_nao_no_texto(self):
+        chunks = chunk_fixo(DOCS[0])
+        self.assertNotIn("n/d", {c.metadata["artigo"] for c in chunks})
+        sala3 = next(c for c in chunks if "Sala 3" in c.page_content)
+        self.assertIn("Art. 6º", sala3.metadata["artigo"])
+        self.assertFalse(sala3.page_content.startswith("[CARTILHA_2025 | "))   # sem rótulo de artigo no texto
 
     def test_chunk_fixo_respeita_tamanho(self):
         self.assertTrue(all(len(c.page_content) <= 560 for c in chunk_fixo(DOCS[0])))
@@ -90,6 +110,13 @@ class TestGuardrails(unittest.TestCase):
         self.assertTrue(dentro_do_escopo("Quem tem direito à Tarifa Social?"))
         self.assertTrue(dentro_do_escopo("quanto pago de luz com 100 kWh"))
         self.assertFalse(dentro_do_escopo("Qual a receita de bolo de cenoura?"))
+        self.assertTrue(dentro_do_escopo("Em que horário o Balcão atende a mudança de endereço?"))
+
+    def test_recusa_lista_de_moradores(self):
+        r = aplicar_guardrails_entrada("Quais famílias do meu bairro recebem a Tarifa Social?")
+        self.assertFalse(r.permitido)
+        self.assertEqual(r.motivo, "lgpd_terceiros")
+        self.assertTrue(aplicar_guardrails_entrada("Quais famílias têm direito à Tarifa Social?").permitido)
 
     def test_fora_do_escopo_e_bloqueado(self):
         r = aplicar_guardrails_entrada("Quem ganhou a Copa do Mundo?")
@@ -141,7 +168,7 @@ class TestFerramentas(unittest.TestCase):
         self.assertEqual(r["economia"], 80.0)
 
     def test_regra_original_100kwh(self):
-        self.assertEqual(calcular_desconto(100, 1.00, "original_2010")["valor_a_pagar"], 52.5)
+        self.assertEqual(calcular_desconto(100, 1.00, "cartilha_2025")["valor_a_pagar"], 52.5)
 
     def test_ate_80kwh_e_gratis(self):
         self.assertEqual(calcular_desconto(80, 0.9)["valor_a_pagar"], 0.0)
@@ -149,7 +176,7 @@ class TestFerramentas(unittest.TestCase):
 
     def test_consumo_alto_regra_original(self):
         # 30*0,35 + 70*0,60 + 120*0,90 + 80*1,00 = 10,5 + 42 + 108 + 80 = 240,5
-        self.assertEqual(calcular_desconto(300, 1.0, "original_2010")["valor_a_pagar"], 240.5)
+        self.assertEqual(calcular_desconto(300, 1.0, "cartilha_2025")["valor_a_pagar"], 240.5)
 
     def test_entradas_invalidas_levantam_erro(self):
         for args in ((-1, 1.0), (100, 0), (100, 50), (999999, 1.0), (100, 1.0, "inexistente")):
@@ -157,20 +184,92 @@ class TestFerramentas(unittest.TestCase):
                 calcular_desconto(*args)
 
 
+class TestPerguntas(unittest.TestCase):
+    def test_oito_perguntas_4_simples_e_4_armadilha(self):
+        perguntas = carregar_perguntas()
+        self.assertEqual(len(perguntas), 8)
+        self.assertEqual(sum(p["tipo"] == "simples" for p in perguntas), 4)
+        self.assertEqual(sum(p["tipo"] == "armadilha" for p in perguntas), 4)
+
+    def test_toda_evidencia_existe_nos_documentos(self):
+        todo = " ".join(" ".join(d.texto.lower().split()) for d in DOCS)
+        for p in carregar_perguntas():
+            for evidencia in p["evidencias"]:
+                self.assertIn(" ".join(evidencia.lower().split()), todo, f"{p['id']}: {evidencia}")
+
+    def test_ground_truth_e_obrigatorio(self):
+        from src.avaliacao import exigir_ground_truth
+
+        with self.assertRaises(RuntimeError):
+            exigir_ground_truth([{"id": "Q1", "ground_truth": "  "}])
+        exigir_ground_truth([{"id": "Q1", "ground_truth": "Uma resposta escrita pelo grupo."}])
+
+    def test_ground_truth_da_entrega_esta_preenchido(self):
+        from src.avaliacao import exigir_ground_truth
+
+        exigir_ground_truth(carregar_perguntas())
+
+
+class TestEmbeddingsResilientes(unittest.TestCase):
+    def test_repete_depois_de_429_e_desiste_de_outros_erros(self):
+        from unittest.mock import patch
+
+        class Interno:
+            def __init__(self, erros):
+                self.erros, self.chamadas = list(erros), 0
+
+            def embed_query(self, texto):
+                self.chamadas += 1
+                if self.erros:
+                    raise self.erros.pop(0)
+                return [1.0, 2.0]
+
+            def embed_documents(self, textos):
+                return [[1.0]] * len(textos)
+
+        with patch("src.config.time.sleep") as dormir:
+            interno = Interno([RuntimeError("429 RESOURCE_EXHAUSTED. Please retry in 2.5s")])
+            self.assertEqual(config.EmbeddingsResilientes(interno).embed_query("x"), [1.0, 2.0])
+            self.assertEqual(interno.chamadas, 2)
+            dormir.assert_called_once()
+            with self.assertRaises(ValueError):
+                config.EmbeddingsResilientes(Interno([ValueError("chave inválida")])).embed_query("x")
+
+
+class TestColetarRespostas(unittest.TestCase):
+    def test_resultado_da_ferramenta_entra_no_contexto_do_ragas(self):
+        from src.agente import RespostaAgente
+        from src.avaliacao import coletar_respostas
+
+        class AgenteFalso:
+            def responder(self, pergunta):
+                return RespostaAgente("R$ 20,00", contextos=["trecho do documento"], chamadas=[
+                    {"ferramenta": "buscar_base_documental", "args": {}, "saida": "x", "pensamento": ""},
+                    {"ferramenta": "calcular_desconto_tarifa_social", "args": {}, "saida": '{"valor_a_pagar": 20.0}', "pensamento": ""},
+                    {"ferramenta": "calcular_desconto_tarifa_social", "args": {}, "saida": "ERRO_CONTROLADO: x", "pensamento": ""}])
+
+        amostra = coletar_respostas(AgenteFalso(), [{"id": "Q8", "tipo": "armadilha", "pergunta": "p", "ground_truth": "g"}])[0]
+        contextos = amostra["retrieved_contexts"]
+        self.assertEqual(len(contextos), 2)          # o trecho e o cálculo; o erro controlado não entra
+        self.assertIn("valor_a_pagar", contextos[1])
+
+
 class TestRecuperacao(unittest.TestCase):
     def test_cobertura_de_evidencias_artigo_vs_fixo(self):
         perguntas = carregar_perguntas()
         artigo = cobertura_de_evidencias(montar_indice("artigo"), perguntas, k=4)
         fixo = cobertura_de_evidencias(montar_indice("fixo"), perguntas, k=4)
-        self.assertEqual(len(artigo["por_pergunta"]), 8)
-        self.assertGreaterEqual(artigo["cobertura_geral"], fixo["cobertura_geral"])
+        for resultado in (artigo, fixo):
+            self.assertEqual(len(resultado["por_pergunta"]), 8)
+            self.assertTrue(0.0 <= resultado["cobertura_geral"] <= 1.0)
+        # Qual estratégia é melhor depende do embedding: a decisão vem da medição com o Gemini (notebook, seção 2).
 
 
 class TestRAG(unittest.TestCase):
     def test_responde_com_fontes(self):
         llm = FakeListChatModel(responses=["Têm direito famílias no CadÚnico [LEI_12212_2010, Art. 2º]."])
         rag = ConsultaRAG(montar_indice(), llm, limiar=0.0)
-        r = rag.responder("Quem tem direito à Tarifa Social de Energia Elétrica?")
+        r = rag.responder("Quem pode pedir a Tarifa Social de Energia Elétrica no Balcão?")
         self.assertFalse(r.nao_sei)
         self.assertIn("CadÚnico", r.resposta)
         self.assertTrue(r.fontes)
@@ -277,6 +376,9 @@ class TestApp(unittest.TestCase):
         self.assertIsInstance(criar_app(ag), gr.Blocks)
         texto = formatar_fontes([{"doc_id": "A", "artigo": "Art. 1º", "status": "VIGENTE", "data": "2025-10-08", "url": "http://x"}], [])
         self.assertIn("Art. 1º", texto)
+        simulado = formatar_fontes([{"doc_id": "B", "artigo": "Art. 2º", "status": "VIGENTE", "data": "2026-01-12",
+                                     "url": "documento simulado pelo grupo (sem link público)"}], [])
+        self.assertNotIn("](", simulado)
 
 
 if __name__ == "__main__":

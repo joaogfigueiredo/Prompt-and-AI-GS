@@ -1,0 +1,49 @@
+REGISTRO DE USO DE IA (6_Chat_Log.txt)
+Global Solution 2026.2 · Prompt and Artificial Intelligence · Turma 1CCR
+João Guilherme Figueiredo (RM 572697) e Ryan Luther Roque (RM 572993)
+
+FERRAMENTA
+Claude (Anthropic), usado pelo Claude Code no computador do João Guilherme, como assistente de programação.
+O modelo que roda dentro do projeto (RAG, agente e juiz do RAGAS) é o Gemini, do Google AI Studio.
+
+COMO A IA FOI USADA (permitido pelo enunciado) E COMO FOI SEPARADO O TRABALHO DO GRUPO
+
+1. Planejamento e primeira versão
+   - O grupo pediu que a IA lesse o enunciado e propusesse a arquitetura: base documental, índice no ChromaDB,
+     pipeline RAG em LCEL, agente com ferramentas, guardrails, interface Gradio e avaliação RAGAS.
+   - DECISÃO DO GRUPO: usar o Gemini como provedor de modelos; o grupo criou a chave no Google AI Studio.
+   - A IA escreveu a primeira versão do código (pasta src/) e testes automatizados.
+
+2. Execução e erros reais (o grupo rodou, a IA ajudou a corrigir)
+   - O modelo gemini-2.5-flash deixou de estar disponível para contas novas (erro 404): o código passou a escolher
+     sozinho um modelo disponível na conta.
+   - Erros 503 (alta demanda) e 429 (limite por minuto do plano gratuito): os embeddings passaram a ser repetidos
+     automaticamente quando recebem 429.
+   - O RAGAS não roda no computador do João (bloqueio de bibliotecas do Windows), então foi executado no Google Colab.
+
+3. Correção para o briefing da disciplina
+   - Ao ler o briefing específico de Prompt and AI, o grupo e a IA identificaram diferenças em relação à primeira versão
+     (base própria e não copiada, ground truth do grupo, notebook autônomo com seções 0 a 8, ZIP com 7 itens).
+   - A IA reescreveu o que era necessário: notebook autônomo, testes (42) e o empacotador do ZIP.
+   - BASE DOCUMENTAL: a IA redigiu o rascunho dos 2 documentos simulados (Cartilha 2025 e Portaria 03/2026), com a armadilha
+     de desatualização, e o grupo revisou. A primeira versão usava as leis reais copiadas e foi descartada.
+   - PROVEDOR: depois do aviso do professor sobre o Ollama, o grupo pediu à IA a decisão mais rápida. A IA recomendou manter
+     o Gemini (chave já criada e RAGAS já testado) e o grupo aceitou.
+
+4. Ground truth (perguntas e respostas corretas)
+   - O briefing proíbe pedir à IA o ground truth. O professor, em conversa privada com o João Guilherme, autorizou que as
+     perguntas e as respostas fossem feitas com IA, pedindo apenas que o texto ficasse o mais humano possível.
+   - Com essa autorização, a IA redigiu o enunciado das 8 perguntas, as frases-evidência usadas para medir o chunking e o
+     rascunho das 8 respostas corretas, sempre a partir do texto dos dois documentos da base. O grupo leu e revisou tudo.
+   - O código se recusa a rodar o RAGAS sem ground truth.
+
+5. Resultados e interpretação
+   - Os números do RAGAS foram MEDIDOS pelo notebook no Colab e exportados para 3_avaliacao_ragas.json. Nenhum valor foi
+     estimado ou inventado.
+   - A IA ajudou a redigir a explicação de por que cada métrica ficou alta ou baixa e a melhoria proposta, a partir do JSON medido.
+
+O QUE NÃO FOI FEITO PELA IA
+   - Não inventou resultados do RAGAS (os números foram medidos) e não copiou documentos da internet nem de outros grupos.
+   - A chave da API ficou no arquivo .env (no computador) e nos Secrets do Colab; não foi escrita em código nem nos arquivos da entrega.
+
+O histórico completo da conversa com a IA fica guardado pelo Claude Code e pode ser apresentado se solicitado.

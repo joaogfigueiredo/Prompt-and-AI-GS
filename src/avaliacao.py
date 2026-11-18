@@ -1,6 +1,6 @@
 """Avaliação: comparação de chunking (sem LLM) e avaliação RAGAS do agente (com Gemini).
 
-  python -m src.avaliacao          # roda o RAGAS e grava avaliacao_ragas.json
+  python -m src.avaliacao          # roda o RAGAS e grava 3_avaliacao_ragas.json
 
 O RAGAS depende de bibliotecas (pyarrow/datasets) que podem ser bloqueadas em alguns
 computadores. Se acontecer, rode no Google Colab (ver README).
@@ -17,6 +17,13 @@ from . import config
 
 def carregar_perguntas(caminho: Path = config.ARQ_PERGUNTAS) -> list[dict]:
     return json.loads(Path(caminho).read_text(encoding="utf-8"))
+
+
+def exigir_ground_truth(perguntas: list[dict]) -> None:
+    """O ground truth (a resposta correta de cada pergunta) é obrigatório: sem ele o RAGAS não roda."""
+    faltando = [p["id"] for p in perguntas if not p.get("ground_truth", "").strip()]
+    if faltando:
+        raise RuntimeError(f"Falta o ground truth (a resposta correta de cada pergunta) em: {', '.join(faltando)}.")
 
 
 def _norm(texto: str) -> str:
@@ -57,10 +64,13 @@ def coletar_respostas(agente, perguntas: list[dict]) -> list[dict]:
     amostras = []
     for p in perguntas:
         r = agente.responder(p["pergunta"])
+        # O resultado da ferramenta de cálculo também é evidência: o valor da resposta vem dele, não dos documentos.
+        da_ferramenta = [f"[resultado da ferramenta {c['ferramenta']}] {c['saida']}" for c in r.chamadas
+                         if c["ferramenta"] != "buscar_base_documental" and not c["saida"].startswith("ERRO_CONTROLADO")]
         amostras.append({
             "id": p["id"], "tipo": p["tipo"],
             "user_input": p["pergunta"], "response": r.texto,
-            "retrieved_contexts": r.contextos or ["(nenhum trecho recuperado)"],
+            "retrieved_contexts": (list(r.contextos) + da_ferramenta) or ["(nenhum trecho recuperado)"],
             "reference": p["ground_truth"],
             "ferramentas_usadas": [c["ferramenta"] for c in r.chamadas],
         })
@@ -71,6 +81,7 @@ def rodar_ragas(amostras: list[dict], llm, embeddings) -> dict:
     try:
         from ragas import EvaluationDataset, evaluate
         from ragas.metrics import AnswerRelevancy, ContextPrecision, ContextRecall, Faithfulness
+        from ragas.run_config import RunConfig
     except Exception as erro:  # ImportError ou bloqueio de DLL
         raise RuntimeError(
             "Não foi possível importar o RAGAS neste computador "
@@ -79,8 +90,14 @@ def rodar_ragas(amostras: list[dict], llm, embeddings) -> dict:
 
     dataset = EvaluationDataset.from_list([
         {k: a[k] for k in ("user_input", "response", "retrieved_contexts", "reference")} for a in amostras])
-    resultado = evaluate(dataset, metrics=[Faithfulness(), AnswerRelevancy(), ContextPrecision(), ContextRecall()],
-                         llm=llm, embeddings=embeddings)
+    metricas_ragas = [Faithfulness(), AnswerRelevancy(), ContextPrecision(), ContextRecall()]
+    try:
+        # Plano gratuito: poucas chamadas em paralelo e mais paciência. Com muitas em paralelo, o juiz
+        # estoura o limite por minuto e o RAGAS devolve NaN em várias métricas.
+        resultado = evaluate(dataset, metrics=metricas_ragas, llm=llm, embeddings=embeddings,
+                             run_config=RunConfig(timeout=300, max_retries=10, max_wait=60, max_workers=3))
+    except TypeError:  # versão do RAGAS sem o parâmetro run_config
+        resultado = evaluate(dataset, metrics=metricas_ragas, llm=llm, embeddings=embeddings)
     tabela = resultado.to_pandas()
     metricas = [c for c in tabela.columns if c not in ("user_input", "response", "retrieved_contexts", "reference")]
 
@@ -92,8 +109,9 @@ def rodar_ragas(amostras: list[dict], llm, embeddings) -> dict:
     medias = {m: _num(tabela[m].mean()) for m in metricas}
     por_tipo = {t: {m: _num(tabela.loc[[a["tipo"] == t for a in amostras], m].mean()) for m in metricas}
                 for t in ("simples", "armadilha")}
-    return {"gerado_em": datetime.now().isoformat(timespec="seconds"), "modelo_llm": config.MODELO_LLM,
-            "modelo_embedding": config.MODELO_EMBEDDING, "n_perguntas": len(amostras),
+    return {"gerado_em": datetime.now().isoformat(timespec="seconds"), "modelo_llm": config.modelo_llm(),
+            "modelo_embedding": config.modelo_embedding(), "n_perguntas": len(amostras),
+            "valores_nao_calculados": {m: int(tabela[m].isna().sum()) for m in metricas},
             "medias": medias, "medias_por_tipo": por_tipo, "por_pergunta": por_pergunta}
 
 
@@ -115,7 +133,9 @@ def main() -> None:
     indice = abrir_indice(embeddings, config.COLECAO_PADRAO, config.PASTA_CHROMA)
     agente = AgenteCidadao(ConsultaRAG(indice, llm), llm)
 
-    amostras = coletar_respostas(agente, carregar_perguntas())
+    perguntas = carregar_perguntas()
+    exigir_ground_truth(perguntas)
+    amostras = coletar_respostas(agente, perguntas)
     resultado = rodar_ragas(amostras, llm, embeddings)
     config.ARQ_RAGAS.write_text(json.dumps(resultado, ensure_ascii=False, indent=2), encoding="utf-8")
     print("Médias:", json.dumps(resultado["medias"], ensure_ascii=False))

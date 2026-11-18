@@ -1,6 +1,6 @@
 """Ferramentas do agente.
 
-1. buscar_base_documental            : consulta o RAG (trechos das leis).
+1. buscar_base_documental            : consulta o RAG (trechos dos documentos do Balcão).
 2. calcular_desconto_tarifa_social   : CALCULA quanto a família paga pela energia, com erro controlado.
 
 Erro controlado = a ferramenta nunca "estoura": devolve um texto "ERRO_CONTROLADO: ..." que o
@@ -16,8 +16,8 @@ from .rag import ConsultaRAG, formatar_contexto
 
 # (limite superior acumulado em kWh, desconto). Acima do último limite: 0% de desconto.
 REGRAS_DE_DESCONTO = {
-    "vigente": ((80.0, 1.00),),                                   # Lei 15.235/2025, art. 3º
-    "original_2010": ((30.0, 0.65), (100.0, 0.40), (220.0, 0.10)),  # Lei 12.212/2010, art. 1º (desatualizada)
+    "vigente": ((80.0, 1.00),),                                    # Portaria 03/2026, art. 2º
+    "cartilha_2025": ((30.0, 0.65), (100.0, 0.40), (220.0, 0.10)),  # Cartilha 2025, art. 3º (desatualizada)
 }
 CONSUMO_MAXIMO_KWH = 5000.0
 TARIFA_MAXIMA = 10.0
@@ -55,7 +55,7 @@ def criar_ferramentas(consulta: ConsultaRAG, registro_docs: list[Document]):
 
     @tool
     def buscar_base_documental(pergunta: str) -> str:
-        """Busca nos documentos oficiais (Lei 12.212/2010 e Lei 15.235/2025) os trechos que respondem à pergunta.
+        """Busca nos documentos do Balcão da Tarifa Social (Cartilha 2025 e Portaria 03/2026) os trechos que respondem à pergunta.
         Use SEMPRE antes de afirmar qualquer regra da Tarifa Social. Devolve trechos com doc_id, artigo e status."""
         # recuperar_seguro já descarta trechos com prompt injection: eles nunca chegam ao modelo.
         docs, _removidos = consulta.recuperar_seguro(pergunta)
@@ -68,7 +68,7 @@ def criar_ferramentas(consulta: ConsultaRAG, registro_docs: list[Document]):
     def calcular_desconto_tarifa_social(consumo_kwh: float, tarifa_reais_por_kwh: float, regra: str = "vigente") -> str:
         """Calcula quanto uma família paga pela energia com a Tarifa Social.
         consumo_kwh: consumo do mês em kWh. tarifa_reais_por_kwh: preço do kWh em reais.
-        regra: 'vigente' (Lei 15.235/2025, padrão) ou 'original_2010' (só para comparação)."""
+        regra: 'vigente' (Portaria 03/2026, padrão) ou 'cartilha_2025' (regra antiga, só para comparação)."""
         try:
             return json.dumps(calcular_desconto(consumo_kwh, tarifa_reais_por_kwh, regra), ensure_ascii=False)
         except ValueError as erro:
