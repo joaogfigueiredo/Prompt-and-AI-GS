@@ -12,7 +12,7 @@ Integrantes:
 Links (todos com acesso liberado para visualização):
   - Notebook no Google Colab: https://colab.research.google.com/github/joaogfigueiredo/Prompt-and-AI-GS/blob/main/1_Notebook_GS2026_2.ipynb
   - Repositório no GitHub: https://github.com/joaogfigueiredo/Prompt-and-AI-GS
-  - Vídeo de demonstração (YouTube, não listado, até 3 minutos): [COLE AQUI O LINK DO VÍDEO]
+  - Vídeo de demonstração (YouTube, não listado, até 3 minutos): https://youtu.be/6dihYULEx-8
 
 Declarações:
   - Nenhuma chave de API está escrita no notebook, no ZIP, no repositório ou nos prints.
